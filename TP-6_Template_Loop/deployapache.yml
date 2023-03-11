@@ -1,0 +1,36 @@
+---
+- name: Deploiement Conteneur Apache
+  hosts: prod
+  become: true
+  pre_tasks:
+    - name: Install les Prerequits pour la creation du conteneur docker apache
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+        - python3-docker
+        - curl
+      when: (ansible_os_family == "Debian")
+    - name: "Install package by loop an other methode"
+      package: name='{{ item }}' state=present
+      loop:
+        - wget
+        - git
+  tasks:
+  - name: Copie website template
+    template:
+      src: index.html.j2
+      dest: /home/taliby/index.html
+      mode: '0644'
+  - name: Creation du conteneur Apache
+    docker_container:
+      name: mywebapp
+      image: ttoure/apachephpdebian:v1
+      state: started
+      ports:
+        - "80:80"
+      volumes:
+        - /home/taliby/index.html:/var/www/html/index.html
+
