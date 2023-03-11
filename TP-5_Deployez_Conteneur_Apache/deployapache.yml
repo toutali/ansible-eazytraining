@@ -1,0 +1,25 @@
+---
+- name: "Deploiement Conteneur Apache"
+  hosts: prod
+  become: true
+  pre_tasks:
+    - name: "Install les Prerequits pour la creation du conteneur docker apache"
+      apt:
+        update_cache: yes
+        name: "{{ packages }}"
+        state: present
+      vars:
+        packages:
+        - python3-docker
+        - curl
+        - wget
+      when: (ansible_os_family == "Debian")
+  tasks:
+  - name: "Creation du conteneur Apache"
+    docker_container:
+      name: myapacheweb
+      image: ttoure/apachephpdebian:v1
+      state: started
+      ports:
+        - "80:80"
+
