@@ -1,0 +1,11 @@
+---
+- hosts: staging
+  become: true
+  vars:
+    system_user: taliby
+  vars_files:
+    - files/secrets/credentials.yml
+  roles:
+    - { role: ansible-role-containerized-wordpress }
+
+
